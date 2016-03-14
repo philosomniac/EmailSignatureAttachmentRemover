@@ -26,6 +26,7 @@ namespace EmailSignatureAttachmentRemover
 
         private void Inspectors_NewInspector(Outlook.Inspector Inspector)
         {
+            /*
             Outlook.MailItem mailItem = Inspector.CurrentItem as Outlook.MailItem;
             if (mailItem!= null)
             {
@@ -35,6 +36,7 @@ namespace EmailSignatureAttachmentRemover
                     mailItem.Body = "This text was added by using code";
                 }
             }
+            */
         }
 
         private void Application_ItemSend(object Item, ref bool Cancel)
@@ -44,7 +46,8 @@ namespace EmailSignatureAttachmentRemover
 
             foreach (Outlook.Attachment a in m.Attachments)
             {
-                MessageBox.Show("There is an attachment called " + a.FileName + " in this message.");   
+                 MessageBox.Show("There is an attachment called " + a.FileName + " in this message." + " It has a filesize of: " + a.Size);   
+
             }
             
 
