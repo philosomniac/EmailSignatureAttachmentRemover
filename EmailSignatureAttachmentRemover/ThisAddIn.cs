@@ -6,13 +6,32 @@ using System.Xml.Linq;
 using Outlook = Microsoft.Office.Interop.Outlook;
 using Office = Microsoft.Office.Core;
 
+
 namespace EmailSignatureAttachmentRemover
 {
     public partial class ThisAddIn
     {
+        Outlook.Inspectors inspectors;
+
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
+            inspectors = this.Application.Inspectors;
+            inspectors.NewInspector +=
+                new Microsoft.Office.Interop.Outlook.InspectorsEvents_NewInspectorEventHandler(Inspectors_NewInspector);
 
+        }
+
+        private void Inspectors_NewInspector(Outlook.Inspector Inspector)
+        {
+            Outlook.MailItem mailItem = Inspector.CurrentItem as Outlook.MailItem;
+            if (mailItem!= null)
+            {
+                if (mailItem.EntryID == null)
+                {
+                    mailItem.Subject = "This text was added by using code";
+                    mailItem.Body = "This text was added by using code";
+                }
+            }
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
@@ -21,6 +40,7 @@ namespace EmailSignatureAttachmentRemover
             //    must run when Outlook shuts down, see http://go.microsoft.com/fwlink/?LinkId=506785
         }
 
+        
         #region VSTO generated code
 
         /// <summary>
