@@ -5,6 +5,7 @@ using System.Text;
 using System.Xml.Linq;
 using Outlook = Microsoft.Office.Interop.Outlook;
 using Office = Microsoft.Office.Core;
+using System.Windows.Forms;
 
 
 namespace EmailSignatureAttachmentRemover
@@ -19,6 +20,8 @@ namespace EmailSignatureAttachmentRemover
             inspectors.NewInspector +=
                 new Microsoft.Office.Interop.Outlook.InspectorsEvents_NewInspectorEventHandler(Inspectors_NewInspector);
 
+            this.Application.ItemSend += new Outlook.ApplicationEvents_11_ItemSendEventHandler(Application_ItemSend);
+
         }
 
         private void Inspectors_NewInspector(Outlook.Inspector Inspector)
@@ -32,6 +35,19 @@ namespace EmailSignatureAttachmentRemover
                     mailItem.Body = "This text was added by using code";
                 }
             }
+        }
+
+        private void Application_ItemSend(object Item, ref bool Cancel)
+        {
+            // int numberOfAttachments = Item.Attachments.Count;
+            Outlook.MailItem m = (Outlook.MailItem)Item;
+
+            foreach (Outlook.Attachment a in m.Attachments)
+            {
+                MessageBox.Show("There is an attachment called " + a.FileName + " in this message.");   
+            }
+            
+
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
