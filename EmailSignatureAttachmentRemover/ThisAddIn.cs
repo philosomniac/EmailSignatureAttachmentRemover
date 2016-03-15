@@ -6,6 +6,8 @@ using System.Xml.Linq;
 using Outlook = Microsoft.Office.Interop.Outlook;
 using Office = Microsoft.Office.Core;
 using System.Windows.Forms;
+using System.Security.Cryptography;
+using System.IO;
 
 
 namespace EmailSignatureAttachmentRemover
@@ -41,17 +43,44 @@ namespace EmailSignatureAttachmentRemover
 
         private void Application_ItemSend(object Item, ref bool Cancel)
         {
+            Cancel = true;
             // int numberOfAttachments = Item.Attachments.Count;
             Outlook.MailItem m = (Outlook.MailItem)Item;
+            string temppath = Path.GetTempPath();
+
+            m.SaveAs(temppath + "tempmailitem.msg");
+            
+
+            // Application_ItemSend(m, ref false);
 
             foreach (Outlook.Attachment a in m.Attachments)
             {
-                 MessageBox.Show("There is an attachment called " + a.FileName + " in this message." + " It has a filesize of: " + a.Size);   
+                MessageBox.Show(a.PathName + "|" + a.Size);
+
+                //a.SaveAsFile(Path.GetTempPath() + a.FileName);
+                //FileStream matchingfile = File.Open(Path.GetTempPath() + a.FileName, FileMode.Open);
+
+                
+                //// int attachmentHash = a.GetHashCode();
+
+                
+                //using (var md5 = MD5.Create())
+                //{
+                //        byte[] hash = md5.ComputeHash(matchingfile);
+                //        string realhash = BitConverter.ToString(hash);
+
+                //}
+                
+                // MessageBox.Show("There is an attachment called " + a.FileName + " in this message." + " It has a filesize of: " + a.Size);   
+
+
 
             }
             
 
         }
+
+
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
         {
