@@ -47,9 +47,16 @@ namespace EmailSignatureAttachmentRemover
             // int numberOfAttachments = Item.Attachments.Count;
             Outlook.MailItem m = (Outlook.MailItem)Item;
             string temppath = Path.GetTempPath();
+            string fullpath = temppath + "tempmailitem.msg";
 
-            m.SaveAs(temppath + "tempmailitem.msg");
-            
+            m.SaveAs(fullpath);
+
+            Outlook.MailItem savedMailItem = Application.Session.OpenSharedItem(fullpath);
+
+            foreach (Outlook.Attachment a in savedMailItem.Attachments)
+            {
+                MessageBox.Show(a.PathName + "|" + a.Size);
+            }
 
             // Application_ItemSend(m, ref false);
 
