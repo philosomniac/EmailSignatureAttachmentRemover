@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
@@ -8,13 +9,19 @@ using Office = Microsoft.Office.Core;
 using System.Windows.Forms;
 using System.Security.Cryptography;
 using System.IO;
-
+/*
+using ImagesToRemove = EmailSignatureAttachmentRemover.Properties.Resources;
+using System.Globalization;
+using System.Resources;
+*/
 
 namespace EmailSignatureAttachmentRemover
 {
     public partial class ThisAddIn
     {
         Outlook.Inspectors inspectors;
+
+        List<byte[]> SignatureImageHashes = new List<byte[]>();
 
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
@@ -24,6 +31,18 @@ namespace EmailSignatureAttachmentRemover
 
             this.Application.ItemSend += new Outlook.ApplicationEvents_11_ItemSendEventHandler(Application_ItemSend);
 
+            /*
+            ResourceSet EmailSignatureImages = ImagesToRemove.ResourceManager.GetResourceSet(CultureInfo.CurrentUICulture, true, true);
+            foreach (DictionaryEntry entry in EmailSignatureImages)
+            {
+                FileStream s = new FileStream(entry.Value)
+            }
+            */
+            
+            SignatureImageHashes.Add(Encoding.ASCII.GetBytes("3E08DF1B9B209E867D2C2A24199D9E4C".ToCharArray()));
+            SignatureImageHashes.Add(Encoding.ASCII.GetBytes("208865EF92C1D09942F1B2D349105F0B".ToCharArray()));
+            SignatureImageHashes.Add(Encoding.ASCII.GetBytes("0A9220ADF16797B639C671FB1898C06F".ToCharArray()));
+            SignatureImageHashes.Add(Encoding.ASCII.GetBytes("2DE1CF13DB70B611564C42DA2214AC2A".ToCharArray()));
         }
 
         private void Inspectors_NewInspector(Outlook.Inspector Inspector)
@@ -50,7 +69,7 @@ namespace EmailSignatureAttachmentRemover
             string fullpath = temppath + "tempmailitem.msg";
 
             m.SaveAs(fullpath);
-
+            /*
             Outlook.MailItem savedMailItem = Application.Session.OpenSharedItem(fullpath);
 
             foreach (Outlook.Attachment a in savedMailItem.Attachments)
@@ -58,11 +77,20 @@ namespace EmailSignatureAttachmentRemover
                 MessageBox.Show(a.PathName + "|" + a.Size);
             }
 
+            */
+
             // Application_ItemSend(m, ref false);
 
             foreach (Outlook.Attachment a in m.Attachments)
             {
                 MessageBox.Show(a.PathName + "|" + a.Size);
+
+                if (a.Size == 0)
+                {
+                    string attachmentPath = temppath + a.FileName;
+                    a.SaveAsFile(attachmentPath);
+                    FileStream savedAttachment = new FileStream(attachmentPath, FileMode.Open);
+                }
 
                 //a.SaveAsFile(Path.GetTempPath() + a.FileName);
                 //FileStream matchingfile = File.Open(Path.GetTempPath() + a.FileName, FileMode.Open);
@@ -87,6 +115,13 @@ namespace EmailSignatureAttachmentRemover
 
         }
 
+        private byte[] GetHash(FileStream stream)
+        {
+            using (var md5 = MD5.Create())
+            {
+                return md5.ComputeHash(stream);
+            }
+        }
 
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)

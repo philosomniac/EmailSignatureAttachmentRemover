@@ -9,6 +9,7 @@
 //------------------------------------------------------------------------------
 
 namespace EmailSignatureAttachmentRemover.Properties {
+    using System;
     
     
     /// <summary>
@@ -18,7 +19,7 @@ namespace EmailSignatureAttachmentRemover.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -56,6 +57,46 @@ namespace EmailSignatureAttachmentRemover.Properties {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap image001 {
+            get {
+                object obj = ResourceManager.GetObject("image001", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap image002 {
+            get {
+                object obj = ResourceManager.GetObject("image002", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap image003 {
+            get {
+                object obj = ResourceManager.GetObject("image003", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap image004 {
+            get {
+                object obj = ResourceManager.GetObject("image004", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }
