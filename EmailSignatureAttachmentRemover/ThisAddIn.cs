@@ -12,7 +12,7 @@ using System.IO;
 using ImagesToRemove = EmailSignatureAttachmentRemover.Properties.Resources;
 using System.Globalization;
 using System.Resources;
-
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace EmailSignatureAttachmentRemover
 {
@@ -40,10 +40,17 @@ namespace EmailSignatureAttachmentRemover
 
             // var image = ImagesToRemove.ResourceManager.GetStream("image001.png");
 
-            SignatureImageHashes.Add(GetHash(ImagesToRemove.ResourceManager.GetStream("image001.png")));
-            SignatureImageHashes.Add(GetHash(ImagesToRemove.ResourceManager.GetStream("image002.jpg")));
-            SignatureImageHashes.Add(GetHash(ImagesToRemove.ResourceManager.GetStream("image003.jpg")));
-            SignatureImageHashes.Add(GetHash(ImagesToRemove.ResourceManager.GetStream("image004.jpg")));
+            /*
+            SignatureImageHashes.Add(GetHash(ImagesToRemove.ResourceManager.GetStream("image001")));
+            SignatureImageHashes.Add(GetHash(ImagesToRemove.ResourceManager.GetStream("image002")));
+            SignatureImageHashes.Add(GetHash(ImagesToRemove.ResourceManager.GetStream("image003")));
+            SignatureImageHashes.Add(GetHash(ImagesToRemove.ResourceManager.GetStream("image004")));
+            */
+
+
+            //System.Drawing.Bitmap myStream = (System.Drawing.Bitmap)ImagesToRemove.ResourceManager.GetObject("image001");
+            //myStream.
+            //var mything = ImagesToRemove.ResourceManager.get
 
             /*
             SignatureImageHashes.Add(Encoding.ASCII.GetBytes("3E08DF1B9B209E867D2C2A24199D9E4C".ToCharArray()));
@@ -51,6 +58,11 @@ namespace EmailSignatureAttachmentRemover
             SignatureImageHashes.Add(Encoding.ASCII.GetBytes("0A9220ADF16797B639C671FB1898C06F".ToCharArray()));
             SignatureImageHashes.Add(Encoding.ASCII.GetBytes("2DE1CF13DB70B611564C42DA2214AC2A".ToCharArray()));
             */
+
+            SignatureImageHashes.Add(GetHash(ObjectToByteArray(ImagesToRemove.ResourceManager.GetObject("image001"))));
+            SignatureImageHashes.Add(GetHash(ObjectToByteArray(ImagesToRemove.ResourceManager.GetObject("image002"))));
+            SignatureImageHashes.Add(GetHash(ObjectToByteArray(ImagesToRemove.ResourceManager.GetObject("image003"))));
+            SignatureImageHashes.Add(GetHash(ObjectToByteArray(ImagesToRemove.ResourceManager.GetObject("image004"))));
         }
 
         private void Inspectors_NewInspector(Outlook.Inspector Inspector)
@@ -98,7 +110,7 @@ namespace EmailSignatureAttachmentRemover
                     string attachmentPath = temppath + a.FileName;
                     a.SaveAsFile(attachmentPath);
                     FileStream savedAttachment = new FileStream(attachmentPath, FileMode.Open);
-                    byte[] currentAttachmentHash = GetHash(savedAttachment);
+                    byte[] currentAttachmentHash = GetHash(ObjectToByteArray(savedAttachment));
 
                     foreach (byte[] b in SignatureImageHashes)
                     {
@@ -150,6 +162,23 @@ namespace EmailSignatureAttachmentRemover
             }
         }
 
+        private byte[] GetHash(byte[] bytes)
+        {
+            using (var md5 = MD5.Create())
+            {
+                return md5.ComputeHash(bytes);
+            }
+        }
+
+        private byte[] ObjectToByteArray(object obj)
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            using (var ms = new MemoryStream())
+            {
+                bf.Serialize(ms, obj);
+                return ms.ToArray();
+            }
+        }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
         {
