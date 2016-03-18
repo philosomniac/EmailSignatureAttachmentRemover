@@ -38,12 +38,19 @@ namespace EmailSignatureAttachmentRemover
             }
             */
 
-            var image = ImagesToRemove.ResourceManager.GetObject("image001.png");
+            // var image = ImagesToRemove.ResourceManager.GetStream("image001.png");
 
+            SignatureImageHashes.Add(GetHash(ImagesToRemove.ResourceManager.GetStream("image001.png")));
+            SignatureImageHashes.Add(GetHash(ImagesToRemove.ResourceManager.GetStream("image002.jpg")));
+            SignatureImageHashes.Add(GetHash(ImagesToRemove.ResourceManager.GetStream("image003.jpg")));
+            SignatureImageHashes.Add(GetHash(ImagesToRemove.ResourceManager.GetStream("image004.jpg")));
+
+            /*
             SignatureImageHashes.Add(Encoding.ASCII.GetBytes("3E08DF1B9B209E867D2C2A24199D9E4C".ToCharArray()));
             SignatureImageHashes.Add(Encoding.ASCII.GetBytes("208865EF92C1D09942F1B2D349105F0B".ToCharArray()));
             SignatureImageHashes.Add(Encoding.ASCII.GetBytes("0A9220ADF16797B639C671FB1898C06F".ToCharArray()));
             SignatureImageHashes.Add(Encoding.ASCII.GetBytes("2DE1CF13DB70B611564C42DA2214AC2A".ToCharArray()));
+            */
         }
 
         private void Inspectors_NewInspector(Outlook.Inspector Inspector)
@@ -125,8 +132,17 @@ namespace EmailSignatureAttachmentRemover
             
 
         }
+        /*
+        private byte[] GetHash(UnmanagedMemoryStream stream)
+        {
+            using (var md5 = MD5.Create())
+            {
+                return md5.ComputeHash(stream);
+            }
+        }
+        */
 
-        private byte[] GetHash(FileStream stream)
+        private byte[] GetHash(Stream stream)
         {
             using (var md5 = MD5.Create())
             {
