@@ -9,11 +9,10 @@ using Office = Microsoft.Office.Core;
 using System.Windows.Forms;
 using System.Security.Cryptography;
 using System.IO;
-/*
 using ImagesToRemove = EmailSignatureAttachmentRemover.Properties.Resources;
 using System.Globalization;
 using System.Resources;
-*/
+
 
 namespace EmailSignatureAttachmentRemover
 {
@@ -38,7 +37,9 @@ namespace EmailSignatureAttachmentRemover
                 FileStream s = new FileStream(entry.Value)
             }
             */
-            
+
+            var image = ImagesToRemove.ResourceManager.GetObject("image001.png");
+
             SignatureImageHashes.Add(Encoding.ASCII.GetBytes("3E08DF1B9B209E867D2C2A24199D9E4C".ToCharArray()));
             SignatureImageHashes.Add(Encoding.ASCII.GetBytes("208865EF92C1D09942F1B2D349105F0B".ToCharArray()));
             SignatureImageHashes.Add(Encoding.ASCII.GetBytes("0A9220ADF16797B639C671FB1898C06F".ToCharArray()));
@@ -90,6 +91,16 @@ namespace EmailSignatureAttachmentRemover
                     string attachmentPath = temppath + a.FileName;
                     a.SaveAsFile(attachmentPath);
                     FileStream savedAttachment = new FileStream(attachmentPath, FileMode.Open);
+                    byte[] currentAttachmentHash = GetHash(savedAttachment);
+
+                    foreach (byte[] b in SignatureImageHashes)
+                    {
+                        if (b == currentAttachmentHash)
+                        {
+                            MessageBox.Show("The hashes match!");
+                        }
+
+                    }
                 }
 
                 //a.SaveAsFile(Path.GetTempPath() + a.FileName);
