@@ -99,9 +99,10 @@ namespace EmailSignatureAttachmentRemover
             // int numberOfAttachments = Item.Attachments.Count;
             Outlook.MailItem m = (Outlook.MailItem)Item;
             string temppath = Path.GetTempPath();
-            string fullpath = temppath + "tempmailitem.msg";
+            //string fullpath = temppath + "tempmailitem.msg";
 
-            m.SaveAs(fullpath);
+            //m.SaveAs(fullpath);
+            m.Save();
             /*
             Outlook.MailItem savedMailItem = Application.Session.OpenSharedItem(fullpath);
 
@@ -113,47 +114,51 @@ namespace EmailSignatureAttachmentRemover
             */
 
             // Application_ItemSend(m, ref false);
+            int currentAttachmentIndex = 1; // office interop indices start at 1.
 
-            foreach (Outlook.Attachment a in m.Attachments)
+            while (currentAttachmentIndex <= m.Attachments.Count)
             {
+                Outlook.Attachment a = m.Attachments[currentAttachmentIndex];
+
                 // MessageBox.Show(a.PathName + "|" + a.Size);
 
-                if (a.Size == 0)
+                string attachmentPath = temppath + a.FileName;
+                
+                a.SaveAsFile(attachmentPath);
+                // FileStream savedAttachment = new FileStream(attachmentPath, FileMode.Open);
+                Stream savedAttachment = File.Open(attachmentPath, FileMode.Open);
+                // byte[] currentAttachmentHash = GetHash(ObjectToByteArray(savedAttachment));
+                string currentAttachmentStringHash = GetHashString(savedAttachment);
+                    
+                foreach (string b in SignatureImageHashes)
                 {
-                    string attachmentPath = temppath + a.FileName;
-                    a.SaveAsFile(attachmentPath);
-                    // FileStream savedAttachment = new FileStream(attachmentPath, FileMode.Open);
-                    Stream savedAttachment = File.Open(attachmentPath, FileMode.Open);
-                    // byte[] currentAttachmentHash = GetHash(ObjectToByteArray(savedAttachment));
-                    string currentAttachmentStringHash = GetHashString(savedAttachment);
-
-                    foreach (string b in SignatureImageHashes)
+                    if (b == currentAttachmentStringHash)
                     {
-                        if (b == currentAttachmentStringHash)
-                        {
-                            MessageBox.Show("The hashes match!");
-                        }
-
+                        // MessageBox.Show("The hashes match!");
+                        a.Delete();
+                        //m.Save();
+                        currentAttachmentIndex--;
                     }
+
                 }
 
                 //a.SaveAsFile(Path.GetTempPath() + a.FileName);
                 //FileStream matchingfile = File.Open(Path.GetTempPath() + a.FileName, FileMode.Open);
 
-                
+
                 //// int attachmentHash = a.GetHashCode();
 
-                
+
                 //using (var md5 = MD5.Create())
                 //{
                 //        byte[] hash = md5.ComputeHash(matchingfile);
                 //        string realhash = BitConverter.ToString(hash);
 
                 //}
-                
+
                 // MessageBox.Show("There is an attachment called " + a.FileName + " in this message." + " It has a filesize of: " + a.Size);   
-
-
+                m.Save();
+                currentAttachmentIndex++;
 
             }
             
