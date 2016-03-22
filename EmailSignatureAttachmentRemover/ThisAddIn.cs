@@ -101,6 +101,9 @@ namespace EmailSignatureAttachmentRemover
             string temppath = Path.GetTempPath();
             //string fullpath = temppath + "tempmailitem.msg";
 
+            string clearTextBody = m.Body;
+            string htmlBody = m.HTMLBody;
+
             //m.SaveAs(fullpath);
             m.Save();
             /*
@@ -116,6 +119,11 @@ namespace EmailSignatureAttachmentRemover
             // Application_ItemSend(m, ref false);
             int currentAttachmentIndex = 1; // office interop indices start at 1.
 
+            m.HTMLBody = htmlBody.Substring(0, htmlBody.LastIndexOf("Jesse Wellens"));
+            m.Save();
+            int attachmentCount = m.Attachments.Count;
+
+            /*
             while (currentAttachmentIndex <= m.Attachments.Count)
             {
                 Outlook.Attachment a = m.Attachments[currentAttachmentIndex];
@@ -161,7 +169,7 @@ namespace EmailSignatureAttachmentRemover
                 currentAttachmentIndex++;
 
             }
-            
+            */
 
         }
         /*
