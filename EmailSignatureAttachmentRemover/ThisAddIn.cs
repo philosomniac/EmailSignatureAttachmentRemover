@@ -16,6 +16,8 @@ namespace EmailSignatureAttachmentRemover
     public partial class ThisAddIn
     {
 
+        static string targetEmailAddress = "TechSupport@apexrevtech.com";
+
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
 
@@ -34,7 +36,7 @@ namespace EmailSignatureAttachmentRemover
             int currentAttachmentIndex = 1; // office interop indices start at 1.
             int attachmentCount = m.Attachments.Count;
             string notificationMessage = "";
-            string targetEmailAddress = "shamiton42@yahoo.com";
+            // string targetEmailAddress = "shamiton42@yahoo.com";
             string recipients = "";
             string ccRecipients = "";
             
@@ -46,7 +48,7 @@ namespace EmailSignatureAttachmentRemover
 
 
             if (recipients.Contains(targetEmailAddress) || ccRecipients.Contains(targetEmailAddress))
-            {
+             {
                 Regex unnamedImageAttachmentPattern = new Regex(@"image0\d\d\.png|image0\d\d.jpg"); // this is the format outlook chooses for unnamed image attachments
                 int minAttachmentSize = 9000;
                 m.SaveAs(temppath + "tempoutlookmessage.msg"); // need to save before modifying the message or outlook gets unhappy.
@@ -93,11 +95,11 @@ namespace EmailSignatureAttachmentRemover
 
                     }
 
-                    Marshal.ReleaseComObject(a);
+                    Marshal.ReleaseComObject(a); // not sure what this does but the internet says it's good practice
                     currentAttachmentIndex++;
                 }
 
-                if (notificationMessage.Length > 0)
+                if (notificationMessage.Length > 0) // means we removed attachments and should let the user know that. Is this a sloppy check?
                 {
 
                     NotifyIcon ni = new NotifyIcon();
