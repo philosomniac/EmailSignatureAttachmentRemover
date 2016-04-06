@@ -33,82 +33,96 @@ namespace EmailSignatureAttachmentRemover
             int currentAttachmentIndex = 1; // office interop indices start at 1.
             int attachmentCount = m.Attachments.Count;
             string notificationMessage = "";
-            // string targetEmailAddress = "shamiton42@yahoo.com";
             string recipients = "";
             string ccRecipients = "";
-            
+
             // Empty To or CC lines returns null instead of an empty string, so we need to do null checks.
             if (m.To != null)
                 recipients = m.To;
             if (m.CC != null)
                 ccRecipients = m.CC;
 
-
-            if (recipients.Contains(targetEmailAddress) || ccRecipients.Contains(targetEmailAddress))
-             {
-                Regex unnamedImageAttachmentPattern = new Regex(@"image0\d\d\.png|image0\d\d.jpg"); // this is the format outlook chooses for unnamed image attachments
-                int minAttachmentSize = 9000;
-                m.SaveAs(temppath + "tempoutlookmessage.msg"); // need to save before modifying the message or outlook gets unhappy.
-
-                while (currentAttachmentIndex <= m.Attachments.Count)
+            try {
+                if (recipients.Contains(targetEmailAddress) || ccRecipients.Contains(targetEmailAddress))
                 {
-                    Outlook.Attachment a = m.Attachments[currentAttachmentIndex];
-                    if (unnamedImageAttachmentPattern.IsMatch(a.FileName))
+                    Regex unnamedImageAttachmentPattern = new Regex(@"image0\d\d\.png|image0\d\d.jpg"); // this is the format outlook chooses for unnamed image attachments
+                    int minAttachmentSize = 9000; // The apex logo clocks in around 8600 bytes, so 9000 should allow for some overhead
+                    m.SaveAs(temppath + "tempoutlookmessage.msg"); // need to save before modifying the message or outlook gets unhappy.
+
+                    while (currentAttachmentIndex <= m.Attachments.Count)
                     {
-
-                        if (a.Size > 0)
-                        {
-                            // MessageBox.Show("This is an attachment that has not been saved manually with a name of: " + a.FileName + " and size of" + a.Size);
-                            if (a.Size < minAttachmentSize)
-                            {
-                                notificationMessage += a.FileName;
-                                a.Delete();
-                                currentAttachmentIndex--;
-                                notificationMessage += Environment.NewLine;
-                            }
-                        }
-
-                        else
+                        Outlook.Attachment a = m.Attachments[currentAttachmentIndex];
+                        if (unnamedImageAttachmentPattern.IsMatch(a.FileName))
                         {
 
-                            string attachmentPath = temppath + a.FileName;
-
-                            a.SaveAsFile(attachmentPath);
-                            Stream savedAttachment = File.Open(attachmentPath, FileMode.Open);
-
-                            // MessageBox.Show("This is an attachment that was saved manually with name: " + a.FileName + " and filesize of: " + savedAttachment.Length);
-
-                            if (savedAttachment.Length < minAttachmentSize)
+                            if (a.Size > 0)
                             {
-                                notificationMessage += a.FileName;
-                                a.Delete();
-                                currentAttachmentIndex--;
-                                notificationMessage += Environment.NewLine;
+                                // MessageBox.Show("This is an attachment that has not been saved manually with a name of: " + a.FileName + " and size of" + a.Size);
+                                if (a.Size < minAttachmentSize)
+                                {
+                                    notificationMessage += a.FileName;
+                                    a.Delete();
+                                    currentAttachmentIndex--;
+                                    notificationMessage += Environment.NewLine;
+                                }
                             }
 
-                            savedAttachment.Close();
+                            else
+                            {
+
+                                string attachmentPath = temppath + a.FileName;
+
+                                a.SaveAsFile(attachmentPath);
+                                Stream savedAttachment = File.Open(attachmentPath, FileMode.Open);
+
+                                // MessageBox.Show("This is an attachment that was saved manually with name: " + a.FileName + " and filesize of: " + savedAttachment.Length);
+
+                                if (savedAttachment.Length < minAttachmentSize)
+                                {
+                                    notificationMessage += a.FileName;
+                                    a.Delete();
+                                    currentAttachmentIndex--;
+                                    notificationMessage += Environment.NewLine;
+                                }
+
+                                savedAttachment.Close();
+
+                            }
 
                         }
 
+                        Marshal.ReleaseComObject(a); // not sure what this does but the internet says it's good practice
+                        currentAttachmentIndex++;
                     }
 
-                    Marshal.ReleaseComObject(a); // not sure what this does but the internet says it's good practice
-                    currentAttachmentIndex++;
+                    if (notificationMessage.Length > 0) // means we removed attachments and should let the user know that. Is this a sloppy check?
+                    {
+
+                        NotifyIcon ni = new NotifyIcon();
+                        ni.Visible = true;
+
+                        ni.BalloonTipTitle = "The following attachments were removed:";
+
+                        ni.BalloonTipText = notificationMessage;
+                        ni.Icon = System.Drawing.SystemIcons.Application;
+                        ni.ShowBalloonTip(20000);
+                        ni.Dispose();
+                    }
                 }
+            }
 
-                if (notificationMessage.Length > 0) // means we removed attachments and should let the user know that. Is this a sloppy check?
-                {
+            catch
+            {
+                NotifyIcon ni = new NotifyIcon();
+                ni.Visible = true;
 
-                    NotifyIcon ni = new NotifyIcon();
-                    ni.Visible = true;
+                ni.BalloonTipTitle = "Outlook attachment remover error";
 
-                    ni.BalloonTipTitle = "The following attachments were removed:";
+                ni.BalloonTipText = "Something went wrong with the outlook attachment remover addon.";
+                ni.Icon = System.Drawing.SystemIcons.Application;
+                ni.ShowBalloonTip(20000);
+                ni.Dispose();
 
-                    ni.BalloonTipText = notificationMessage;
-                    ni.Icon = System.Drawing.SystemIcons.Application;
-                    ni.ShowBalloonTip(20000);
-                    ni.Dispose();
-                }
             }
         }
 
