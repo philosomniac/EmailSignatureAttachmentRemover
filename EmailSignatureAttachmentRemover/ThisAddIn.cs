@@ -20,10 +20,7 @@ namespace EmailSignatureAttachmentRemover
 
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
-
-
             this.Application.ItemSend += new Outlook.ApplicationEvents_11_ItemSendEventHandler(Application_ItemSend);
-
         }
 
 
@@ -80,6 +77,7 @@ namespace EmailSignatureAttachmentRemover
                             Stream savedAttachment = File.Open(attachmentPath, FileMode.Open);
 
                             // MessageBox.Show("This is an attachment that was saved manually with name: " + a.FileName + " and filesize of: " + savedAttachment.Length);
+
                             if (savedAttachment.Length < minAttachmentSize)
                             {
                                 notificationMessage += a.FileName;
@@ -89,7 +87,6 @@ namespace EmailSignatureAttachmentRemover
                             }
 
                             savedAttachment.Close();
-
 
                         }
 
