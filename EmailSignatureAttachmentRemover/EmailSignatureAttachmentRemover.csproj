@@ -220,12 +220,6 @@
     </Compile>
     <AppDesigner Include="Properties\" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="Properties\ImagesToRemove\image001.png" />
-    <Content Include="Properties\ImagesToRemove\image002.jpg" />
-    <Content Include="Properties\ImagesToRemove\image003.jpg" />
-    <Content Include="Properties\ImagesToRemove\image004.jpg" />
-  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
