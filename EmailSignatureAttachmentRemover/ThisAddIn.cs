@@ -16,7 +16,7 @@ namespace EmailSignatureAttachmentRemover
     public partial class ThisAddIn
     {
 
-        static string targetEmailAddress = "TechSupport@apexrevtech.com";
+        const string TARGET_EMAIL_ADDRESS = "techsupport@apexrevtech.com";
 
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
@@ -33,17 +33,19 @@ namespace EmailSignatureAttachmentRemover
             int currentAttachmentIndex = 1; // office interop indices start at 1.
             int attachmentCount = m.Attachments.Count;
             string notificationMessage = "";
-            string recipients = "";
-            string ccRecipients = "";
+            bool beingSentToSpiceworks = false;
 
-            // Empty To or CC lines returns null instead of an empty string, so we need to do null checks.
-            if (m.To != null)
-                recipients = m.To;
-            if (m.CC != null)
-                ccRecipients = m.CC;
+            foreach (Outlook.Recipient r in m.Recipients)
+            {
+                if (r.Address == TARGET_EMAIL_ADDRESS)
+                {
+                    beingSentToSpiceworks = true;
+                    break;
+                }
+            }
 
             try {
-                if (recipients.Contains(targetEmailAddress) || ccRecipients.Contains(targetEmailAddress))
+                if (beingSentToSpiceworks)
                 {
                     Regex unnamedImageAttachmentPattern = new Regex(@"image0\d\d\.png|image0\d\d.jpg"); // this is the format outlook chooses for unnamed image attachments
                     int minAttachmentSize = 9000; // The apex logo clocks in around 8600 bytes, so 9000 should allow for some overhead
