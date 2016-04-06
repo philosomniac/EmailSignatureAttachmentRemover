@@ -8,40 +8,22 @@ using Outlook = Microsoft.Office.Interop.Outlook;
 using System.Runtime.InteropServices;
 using Office = Microsoft.Office.Core;
 using System.Windows.Forms;
-using System.Security.Cryptography;
 using System.IO;
-using ImagesToRemove = EmailSignatureAttachmentRemover.Properties.Resources;
-using System.Globalization;
-using System.Resources;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
 
 namespace EmailSignatureAttachmentRemover
 {
     public partial class ThisAddIn
     {
-        Outlook.Inspectors inspectors;
-
-        // List<byte[]> SignatureImageHashes = new List<byte[]>();
-        List<string> SignatureImageHashes = new List<string>();
 
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
-            /*
-            inspectors = this.Application.Inspectors;
-            inspectors.NewInspector +=
-                new Microsoft.Office.Interop.Outlook.InspectorsEvents_NewInspectorEventHandler(Inspectors_NewInspector);
-            */
+
 
             this.Application.ItemSend += new Outlook.ApplicationEvents_11_ItemSendEventHandler(Application_ItemSend);
 
         }
-        /*
-        private void Inspectors_NewInspector(Outlook.Inspector Inspector)
-        {
 
-        }
-        */
 
         private void Application_ItemSend(object Item, ref bool Cancel)
         {
