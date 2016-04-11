@@ -37,7 +37,7 @@ namespace EmailSignatureAttachmentRemover
 
             foreach (Outlook.Recipient r in m.Recipients)
             {
-                if (r.Address == TARGET_EMAIL_ADDRESS)
+                if (r.Address.ToLower().Trim() == TARGET_EMAIL_ADDRESS)
                 {
                     beingSentToSpiceworks = true;
                     break;
