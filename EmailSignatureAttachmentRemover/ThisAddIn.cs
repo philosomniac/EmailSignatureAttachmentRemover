@@ -17,6 +17,7 @@ namespace EmailSignatureAttachmentRemover
     {
 
         const string TARGET_EMAIL_ADDRESS = "techsupport@apexrevtech.com";
+        const string PR_SMTP_ADDRESS = "http://schemas.microsoft.com/mapi/proptag/0x39FE001E";
 
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
@@ -35,14 +36,27 @@ namespace EmailSignatureAttachmentRemover
             string notificationMessage = "";
             bool beingSentToSpiceworks = false;
 
+
+            //foreach (Outlook.Recipient r in m.Recipients)
+            //{
+            //    if (r.Address.ToLower().Trim() == TARGET_EMAIL_ADDRESS)
+            //    {
+            //        beingSentToSpiceworks = true;
+            //        break;
+            //    }
+            //}
+
             foreach (Outlook.Recipient r in m.Recipients)
             {
-                if (r.Address.ToLower().Trim() == TARGET_EMAIL_ADDRESS)
+                Outlook.PropertyAccessor pa = r.PropertyAccessor;
+                string smtpAddress = pa.GetProperty(PR_SMTP_ADDRESS);
+                if (smtpAddress.ToLower().Trim() == TARGET_EMAIL_ADDRESS)
                 {
                     beingSentToSpiceworks = true;
                     break;
                 }
             }
+
 
             try {
                 if (beingSentToSpiceworks)
